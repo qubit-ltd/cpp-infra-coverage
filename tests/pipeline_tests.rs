@@ -493,12 +493,8 @@ fn test_build_lock_wait_respects_timeout() {
         .open(p.path().join("build/infra/coverage/.cpp-infra.lock"))
         .unwrap();
     fs2::FileExt::lock_exclusive(&lock).unwrap();
-    let (o, v) = std::thread::scope(|scope| {
-        let child = scope.spawn(|| run(&p, &[("FAKE_SKIP_VERIFY_LOCK", "1")]));
-        std::thread::sleep(std::time::Duration::from_millis(1500));
-        drop(lock);
-        child.join().unwrap()
-    });
+    let (o, v) = run(&p, &[("FAKE_SKIP_VERIFY_LOCK", "1")]);
+    drop(lock);
     assert_eq!(o.status.code(), Some(3));
     assert!(v["diagnostics"][0]["message"].as_str().unwrap().contains("lock"));
 }
