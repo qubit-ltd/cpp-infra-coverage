@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "owner": "cpp-infra-coverage",
+  "files": [
+    {
+      "source": "policy/thresholds.toml",
+      "target": ".infra/coverage/policy/thresholds.toml",
+      "sha256": "d69693028fe977485d86faf3b844a5ec7bb65c9f1677589fcdc479000e9df649",
+      "executable": false
+    }
+  ],
+  "project_files": [
+    {
+      "source": "config.toml",
+      "target": ".infra/coverage/config.toml",
+      "sha256": "5c30ecb1c23723117f3331f27cc6a0a7e047f60baf7d827d6bfbda4b69dc1ae2",
+      "executable": false
+    }
+  ]
+}

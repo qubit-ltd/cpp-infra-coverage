@@ -1,0 +1,23 @@
+schema = 1
+
+# Adapt this profile to a dedicated, committed CMake instrumentation preset.
+# Compile with -fprofile-instr-generate -fcoverage-mapping and low optimization;
+# link with -fprofile-instr-generate. Ordinary build profiles are not overwritten.
+profile = "coverage"
+
+# Replace with the exact executable/shared-library targets produced by your tests.
+# Missing targets, missing mappings and zero runnable tests are errors.
+binary_targets = ["example-tests"]
+
+# Adapt to the declared project source_roots. Every listed root must have mapping;
+# omit a declaration-only include root only after reviewing your coverage scope.
+required_source_roots = ["src", "include"]
+threshold_exempt_files = []
+jobs = 4
+timeout_seconds = 300
+
+# Initial project-owned suggestions; approved organization floors still apply.
+[thresholds]
+lines = 90.0
+functions = 95.0
+branches = 80.0
