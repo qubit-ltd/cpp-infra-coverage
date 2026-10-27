@@ -363,7 +363,13 @@ fn test_init_manifest_delivers_project_owned_coverage_config_only_once() {
     );
     assert_eq!(entry["executable"], false);
     let bytes = fs::read(root.join("conf").join(entry["source"].as_str().unwrap())).unwrap();
-    assert_eq!(entry["sha256"], format!("{:x}", Sha256::digest(&bytes)));
+    assert_eq!(
+        entry["sha256"],
+        Sha256::digest(&bytes)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>()
+    );
     let config: toml::Value = toml::from_str(std::str::from_utf8(&bytes).unwrap()).unwrap();
     assert_eq!(config["schema"].as_integer(), Some(1));
     assert!(!config["binary_targets"].as_array().unwrap().is_empty());

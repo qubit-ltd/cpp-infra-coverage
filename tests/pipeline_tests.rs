@@ -443,13 +443,21 @@ fn test_runtime_snapshot_accepts_same_binary_copy_and_rejects_tampering() {
     let copy = root.join("coverage-copy");
     let binary = fs::read(env!("CARGO_BIN_EXE_cpp-infra-coverage")).unwrap();
     fs::write(&copy, &binary).unwrap();
-    let sha = format!("{:x}", Sha256::digest(&binary));
+    let sha = Sha256::digest(&binary)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
     let snapshot = root.join("runtime-snapshot.json");
     let identity = serde_json::json!({"schema":1,"bundle_id":"development","tools":[{"name":"cpp-infra-coverage","version":"0.1.0","revision":null,"protocol":1,"binary":copy,"executable_sha256":sha}],"offline":true,"stale":false});
     let data = serde_json::to_vec(&identity).unwrap();
     fs::write(&snapshot, &data).unwrap();
     context["runtime_snapshot"] = serde_json::json!(snapshot);
-    context["runtime_snapshot_digest"] = serde_json::json!(format!("{:x}", Sha256::digest(&data)));
+    context["runtime_snapshot_digest"] = serde_json::json!(
+        Sha256::digest(&data)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>()
+    );
     let path = p.path().join("build/runtime-context.json");
     fs::write(&path, serde_json::to_vec(&context).unwrap()).unwrap();
     let o = cli(&p, &["--run-context", path.to_str().unwrap(), "plan"], &[]);
@@ -942,7 +950,12 @@ fn test_runtime_snapshot_rejects_missing_tools_and_mismatched_identity() {
             serde_json::to_vec(&serde_json::json!({"schema":1,"bundle_id":"development","tools":tools})).unwrap();
         fs::write(&snapshot, &data).unwrap();
         context["runtime_snapshot"] = serde_json::json!(snapshot);
-        context["runtime_snapshot_digest"] = serde_json::json!(format!("{:x}", Sha256::digest(&data)));
+        context["runtime_snapshot_digest"] = serde_json::json!(
+            Sha256::digest(&data)
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<String>()
+        );
         fs::write(&path, serde_json::to_vec(&context).unwrap()).unwrap();
         let o = cli(&p, &["--run-context", path.to_str().unwrap(), "plan"], &[]);
         assert_eq!(o.status.code(), Some(2));

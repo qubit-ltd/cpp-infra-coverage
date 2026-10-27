@@ -16,7 +16,10 @@ use walkdir::WalkDir;
 use crate::coverage_error::CoverageError;
 use crate::session::utf8;
 pub(crate) fn hash(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>()
 }
 pub(crate) fn file(path: &Path) -> Result<String, CoverageError> {
     Ok(hash(&fs::read(path)?))
@@ -82,5 +85,8 @@ pub(crate) fn tree(root: &Path, config: Option<bool>, excluded: &[&Path]) -> Res
         h.update((bytes.len() as u64).to_le_bytes());
         h.update(bytes);
     }
-    Ok(format!("{:x}", h.finalize()))
+    Ok(h.finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>())
 }
